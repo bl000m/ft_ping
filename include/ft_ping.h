@@ -13,9 +13,14 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <getopt.h>
 
 #define PACKET_SIZE 64
 #define IP_HEADER_SIZE 20
+
+// Define color escape sequences
+#define COLOR_GREEN "\033[0;32m"
+#define COLOR_RESET "\033[0m"
 
 struct options {
     int count;
@@ -41,6 +46,8 @@ struct info {
 extern struct info g_info;
 
 void parsing_arguments(int argc, char *argv[]);
-void print_usage();
+void print_unrecognized_option(const char *option);
+void print_no_args();
+void print_help();
 
 #endif

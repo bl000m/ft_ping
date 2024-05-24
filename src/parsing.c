@@ -1,42 +1,54 @@
 #include "ft_ping.h"
 
-void parsing_arguments(int argc, char *argv[])
-{
-    int opt;
+void parsing_arguments(int argc, char *argv[]) {
     int verbose = 0;
 
-    while ((opt = getopt(argc, argv, "v?")) != -1) {
-        switch (opt) {
-            case 'v':
-                verbose = 1;
-                break;
-            case '?':
-            default:
-                print_usage();
-                exit(EXIT_SUCCESS);
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-v") == 0) {
+            verbose = 1;
+        } else if (strcmp(argv[i], "-?") == 0) {
+            print_help();
+            exit(EXIT_SUCCESS);
+        } else if (argv[i][0] == '-') {
+            printf("./ft_ping: unrecognized option '%s'\n", argv[i]);
+            printf("Try 'ping -?' for more information.\n");
+            exit(EXIT_FAILURE);
         }
     }
-    
-    if (optind >= argc) {
-        fprintf(stderr, "ft_ping: usage error: Destination address required\n");
-        print_usage();
+
+    if (argc <= 1) {
+        print_no_args();
         exit(EXIT_FAILURE);
     }
 
-    char *destination = argv[optind];
+    char *destination = argv[argc - 1];
     printf("Destination: %s\n", destination);
 
     if (verbose) {
         printf("Verbose mode enabled \n");
     }
-
-
-
 }
 
-void print_usage() {
-    printf("Usage: ft_ping [-v] [-?] destination\n");
-    printf("Options:\n");
-    printf("  -v       : Verbose mode\n");
-    printf("  -?       : Display usage information\n");
+
+void print_no_args() {
+    printf("./ft_ping: missing host operand\n");
+    printf("Try 'ping -?' for more information.\n");
+}
+
+void print_unrecognized_option(const char *option) {
+    printf("./ft_ping: unrecognized option '%s'\n", option);
+    printf("Try 'ping --help' or 'ping --usage' for more information.\n");
+}
+
+void print_help() {
+    printf("Usage: ./ft_ping [OPTION...] HOST ...\n");
+    printf("Send ICMP ECHO_REQUEST packets to network hosts.\n\n");
+    printf(COLOR_GREEN "Options controlling ICMP request types:\n\n" COLOR_RESET);
+    printf("        ...not at the moment.\n\n");
+    printf(COLOR_GREEN"Options valid for all request types:\n\n"COLOR_RESET);
+    printf("-v             verbose output\n\n");
+    printf(COLOR_GREEN"Options valid for echo requests:\n\n"COLOR_RESET);
+    printf("-?                 give this help list\n\n");
+    // printf("-V, --version              print program version\n\n");
+    printf("Report bugs to <bug-mpagani@gnu.org>.");
 }
