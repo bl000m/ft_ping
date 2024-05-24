@@ -40,16 +40,7 @@ struct info {
 
 extern struct info g_info;
 
-void parse_options(int argc, char *argv[], struct options *opts);
-void resolve_dns(const char *hostname, struct sockaddr_in *dest);
-void print_start_message(const char *hostname, const struct sockaddr_in *dest, const struct options *opts);
-void setup_socket(void);
-void prepare_packet(struct packet *pkt);
-void send_packet(struct packet *pkt, struct sockaddr_in *dest, struct timeval *tv_send);
-void receive_and_print_packet(struct packet *pkt, struct sockaddr_in *r_addr, struct timeval *tv_receive, struct timeval *tv_send);
-void print_statistics(void);
-void handle_signal(int signo);
-void exit_with_error(const char *message);
-unsigned short calculate_checksum(void *b, int len);
+void parsing_arguments(int argc, char *argv[]);
+void print_usage();
 
 #endif

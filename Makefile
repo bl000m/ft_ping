@@ -1,8 +1,9 @@
 # Source files
-MY_SOURCES = src/main.c \
+MY_SOURCES = 	src/main.c \
+				src/parsing.c \
              # src/ft_utils.c \
              # src/ft_init.c \
-             # src/ft_parsing.c \
+             
              # src/ft_print.c
 
 # Object files
