@@ -14,6 +14,31 @@ struct info g_info = {
 
 int main(int argc, char *argv[]) {
     parsing_arguments(argc, argv);
+    // Initialize Variables
+
+    // Perform DNS Resolution (Optional): 
+
+    // Create ICMP Socket
+    // (Create a raw socket for sending and receiving ICMP packets.)
+    
+    // Set TTL Value (Optional): Set the Time-To-Live (TTL) value 
+    // for the outgoing ICMP packets. 
+    // This can be done using the setsockopt function 
+    // with the IP_TTL option.
+
+    // Send ICMP Echo Requests: Send ICMP echo request packets to the target host in a loop. 
+    // need to handle timeouts and receive ICMP echo reply packets.
+    
+    // Process ICMP Echo Replies: Receive ICMP echo reply packets and calculate round-trip times (RTT). Optionally, perform 
+    // reverse DNS resolution on the IP addresses of the replying hosts.
+
+    // Display Results: Format and display the results, including the number of packets transmitted, received, lost, and any relevant 
+    // statistics such as minimum, maximum, and average RTT.
+
+    // Handle Errors: Handle any errors that occur during the execution of the program, such as network errors, socket errors, or invalid command-line arguments.
+
+    // Cleanup Resources: Close the ICMP socket and perform any necessary cleanup before exiting the program.
+
     return 0;
 }
 
