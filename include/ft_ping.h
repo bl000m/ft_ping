@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/ip_icmp.h>
-#include <netdb.h>
+#include <netdb.h> //addrinfo
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
@@ -74,5 +74,15 @@ void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args);
 void print_unrecognized_option(const char *option);
 void print_no_args();
 void print_help();
+void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution);
+void create_icmp_socket(socket_mgmt_t *socket_mgmt);
+void set_socket_options(socket_mgmt_t *socket_mgmt);
+void send_icmp_request(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, dns_resolution_t *dns_resolution);
+void receive_icmp_reply(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, stats_t *stats);
+void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
+void print_statistics(stats_t *stats, int packets_sent);
+unsigned short calculate_checksum(unsigned short *paddress, int len);
+void handle_errors(void);
+void cleanup_resources(socket_mgmt_t *socket_mgmt);
 
 #endif

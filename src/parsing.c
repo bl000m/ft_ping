@@ -34,26 +34,47 @@ void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args) {
     printf("Destination: %s\n", cmd_args->hostname);
 }
 
+void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution) {
+    struct addrinfo hints, *res, *p;
+    int status;
+    char ipstr[INET_ADDRSTRLEN];
 
-void print_no_args() {
-    printf("./ft_ping: missing host operand\n");
-    printf("Try 'ping -?' for more information.\n");
+    // Prepare the hints structure
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;  // We are interested in IPv4 addresses
+    hints.ai_socktype = SOCK_RAW;  // We need raw socket
+
+    // Get address information
+    if ((status = getaddrinfo(hostname, NULL, &hints, &res)) != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+        exit(EXIT_FAILURE);
+    }
+
+    // Loop through the results and pick the first one we can use
+    for (p = res; p != NULL; p = p->ai_next) {
+        void *addr;
+        struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+        addr = &(ipv4->sin_addr);
+
+        // Convert the IP address to a string and store it
+        inet_ntop(p->ai_family, addr, ipstr, sizeof(ipstr));
+        dns_resolution->resolved_ip = strdup(ipstr);  // Store resolved IP as a string
+        dns_resolution->dest_addr = *ipv4;  // Store destination address
+
+        break;  // We only need the first valid result
+    }
+
+    // Free the linked list
+    freeaddrinfo(res);
+
+    // Check if we failed to resolve the hostname
+    if (!dns_resolution->resolved_ip) {
+        fprintf(stderr, "Failed to resolve hostname: %s\n", hostname);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Resolved hostname %s to IP address: %s\n", hostname, dns_resolution->resolved_ip);
 }
 
-void print_unrecognized_option(const char *option) {
-    printf("./ft_ping: unrecognized option '%s'\n", option);
-    printf("Try 'ping --help' or 'ping --usage' for more information.\n");
-}
 
-void print_help() {
-    printf("Usage: ./ft_ping [OPTION...] HOST ...\n");
-    printf("Send ICMP ECHO_REQUEST packets to network hosts.\n\n");
-    printf(COLOR_GREEN "Options controlling ICMP request types:\n\n" COLOR_RESET);
-    printf("        ...not at the moment.\n\n");
-    printf(COLOR_GREEN"Options valid for all request types:\n\n"COLOR_RESET);
-    printf("-v             verbose output\n\n");
-    printf(COLOR_GREEN"Options valid for echo requests:\n\n"COLOR_RESET);
-    printf("-?                 give this help list\n\n");
-    // printf("-V, --version              print program version\n\n");
-    printf("Report bugs to <bug-mpagani@gnu.org>.");
-}
+
