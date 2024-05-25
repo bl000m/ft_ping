@@ -2,6 +2,7 @@
 MY_SOURCES = 	src/main.c \
 				src/parsing.c \
 				src/printing.c \
+				src/raw_socket.c \
              # src/ft_utils.c \
              # src/ft_init.c \
              

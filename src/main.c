@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 
     // Create ICMP Socket
     // (Create a raw socket for sending and receiving ICMP packets.)
-    // create_icmp_socket(&ping_info.socket_mgmt);
+    create_icmp_socket(&ping_info.socket_mgmt);
 
     // Set TTL Value (Optional): Set the Time-To-Live (TTL) value 
     // for the outgoing ICMP packets. 
