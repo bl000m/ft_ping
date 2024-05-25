@@ -37,11 +37,12 @@ void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args) {
 void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution) {
     struct addrinfo hints, *res, *p;
     int status;
-    char ipstr[INET_ADDRSTRLEN];
+    char resolved_ip_str[INET_ADDRSTRLEN];
+    // The INET_ADDRSTRLEN macro is defined in <arpa/inet.h>. It specifies the length of the string buffer needed to hold the IPv4 address in string form, including the terminating null byte. Specifically, INET_ADDRSTRLEN is defined as 16, which is enough to hold the longest possible IPv4 address in dotted-decimal format (e.g., "255.255.255.255") plus the null terminator.
 
     // Prepare the hints structure
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;  // We are interested in IPv4 addresses
+    hints.ai_family = AF_INET;  // Set hints.ai_family to AF_INET to indicate IPv4 addresses
     hints.ai_socktype = SOCK_RAW;  // We need raw socket
 
     // Get address information
@@ -57,8 +58,8 @@ void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution) {
         addr = &(ipv4->sin_addr);
 
         // Convert the IP address to a string and store it
-        inet_ntop(p->ai_family, addr, ipstr, sizeof(ipstr));
-        dns_resolution->resolved_ip = strdup(ipstr);  // Store resolved IP as a string
+        inet_ntop(p->ai_family, addr, resolved_ip_str, sizeof(resolved_ip_str));
+        dns_resolution->resolved_ip = strdup(resolved_ip_str);  // Store resolved IP as a string
         dns_resolution->dest_addr = *ipv4;  // Store destination address
 
         break;  // We only need the first valid result

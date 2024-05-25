@@ -6,9 +6,9 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
+#include <arpa/inet.h> // INET_ADDSTRLEN in resolve hostname
 #include <netinet/ip_icmp.h>
-#include <netdb.h> //addrinfo
+#include <netdb.h> //addrinfo struct + getaddrinfo
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
