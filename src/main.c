@@ -1,20 +1,9 @@
 #include "ft_ping.h"
 
-// Define and initialize the global info structure
-struct info g_info = {
-    .sockfd = 0,               // Initialize socket file descriptor to 0
-    .transmitted = 0,          // Initialize transmitted packets count to 0
-    .received = 0,             // Initialize received packets count to 0
-    .min_time = 1e6,           // Initialize minimum round-trip time to a large value
-    .max_time = 0,             // Initialize maximum round-trip time to 0
-    .total_time = 0,           // Initialize total round-trip time to 0
-    .total_time_squared = 0,   // Initialize sum of squares of round-trip times to 0
-    .dest = {0}                // Initialize destination IP address to 0.0.0.0
-};
-
 int main(int argc, char *argv[]) {
-    parsing_arguments(argc, argv);
     // Initialize Variables
+    ft_ping_t ping_info = {0}; // Initialize the context structure
+    parsing_arguments(argc, argv, &ping_info.cmd_args);
 
     // Perform DNS Resolution (Optional): 
 

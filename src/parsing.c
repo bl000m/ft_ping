@@ -1,32 +1,37 @@
 #include "ft_ping.h"
 
-void parsing_arguments(int argc, char *argv[]) {
-    int verbose = 0;
+
+void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args) {
+    // Initialize the struct fields
+    cmd_args->verbose = false;
+    cmd_args->show_help = false;
+    cmd_args->hostname = NULL;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-v") == 0) {
-            verbose = 1;
+            cmd_args->verbose = true;
         } else if (strcmp(argv[i], "-?") == 0) {
+            cmd_args->show_help = true;
             print_help();
             exit(EXIT_SUCCESS);
         } else if (argv[i][0] == '-') {
-            printf("./ft_ping: unrecognized option '%s'\n", argv[i]);
-            printf("Try 'ping -?' for more information.\n");
+            print_unrecognized_option(argv[i]);
             exit(EXIT_FAILURE);
+        } else {
+            cmd_args->hostname = argv[i];
         }
     }
 
-    if (argc <= 1) {
+    if (cmd_args->hostname == NULL) {
         print_no_args();
         exit(EXIT_FAILURE);
     }
 
-    char *destination = argv[argc - 1];
-    printf("Destination: %s\n", destination);
-
-    if (verbose) {
-        printf("Verbose mode enabled \n");
+    if (cmd_args->verbose) {
+        printf("Verbose mode enabled\n");
     }
+
+    printf("Destination: %s\n", cmd_args->hostname);
 }
 
 

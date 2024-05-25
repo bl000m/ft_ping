@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <getopt.h>
+#include <stdbool.h>
 
 #define PACKET_SIZE 64
 #define IP_HEADER_SIZE 20
@@ -22,30 +23,54 @@
 #define COLOR_GREEN "\033[0;32m"
 #define COLOR_RESET "\033[0m"
 
-struct options {
-    int count;
-};
-
-struct packet {
-    struct icmphdr header;
-    char msg[PACKET_SIZE - sizeof(struct icmphdr)];
-};
-
-struct info {
-    int sockfd;               // File descriptor for the socket
-    int transmitted;          // Number of packets transmitted
-    int received;             // Number of packets received
-    double min_time;          // Minimum round-trip time
-    double max_time;          // Maximum round-trip time
-    double total_time;        // Total round-trip time
-    double total_time_squared; // Sum of squares of round-trip times (for standard deviation calculation)
+// Command-line Arguments Parsing: Variables to store options and arguments
+typedef struct {
+    bool verbose;
+    bool show_help;
     char *hostname;
-    struct in_addr dest;      // Destination IP address
-};
+} cmd_args_t;
 
-extern struct info g_info;
+// DNS Resolution: Variables to store target IP address or hostname
+typedef struct {
+    struct sockaddr_in dest_addr;
+    char *resolved_ip;
+} dns_resolution_t;
 
-void parsing_arguments(int argc, char *argv[]);
+// Socket Management: Variables for socket descriptors and related settings
+typedef struct {
+    int sockfd;
+    int ttl;
+} socket_mgmt_t;
+
+// ICMP Packet Handling: Variables for packet construction, sequence numbers, and IDs
+typedef struct {
+    struct icmp icmp_pkt;
+    int seq_num;
+    pid_t pid;
+    unsigned short checksum;
+} icmp_packet_t;
+
+typedef struct {
+    int packets_sent;
+    int packets_received;
+    double min_rtt;
+    double max_rtt;
+    double total_rtt;
+} stats_t;
+
+// Main program context structure to encompass all domains
+typedef struct {
+    cmd_args_t cmd_args;
+    dns_resolution_t dns_resolution;
+    socket_mgmt_t socket_mgmt;
+    icmp_packet_t icmp_packet;
+    stats_t stats;
+    struct timeval start_time;
+} ft_ping_t;
+
+// extern struct info g_info;
+
+void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args);
 void print_unrecognized_option(const char *option);
 void print_no_args();
 void print_help();
