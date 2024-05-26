@@ -19,6 +19,9 @@ int main(int argc, char *argv[]) {
     set_socket_options(&ping_info.socket_mgmt);
 
     // Initialize ICMP Packet
+    initialize_icmp_packet(&ping_info.icmp_packet);
+    finalize_icmp_packet(&ping_info.icmp_packet);
+
     // ping_info.icmp_packet.pid = getpid();
     // ping_info.icmp_packet.seq_num = 0;
 

@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <getopt.h>
 #include <stdbool.h>
+#include <time.h>
 
 #define PACKET_SIZE 64
 #define IP_HEADER_SIZE 20
@@ -83,8 +84,11 @@ void send_icmp_request(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, d
 void receive_icmp_reply(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, stats_t *stats);
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
 void print_statistics(stats_t *stats, int packets_sent);
-unsigned short calculate_checksum(unsigned short *paddress, int len);
 void handle_errors(void);
 void cleanup_resources(socket_mgmt_t *socket_mgmt);
+void initialize_icmp_packet(icmp_packet_t *icmp_packet);
+void finalize_icmp_packet(icmp_packet_t *icmp_packet);
+unsigned short calculate_checksum(void *buf, int len);
+
 
 #endif
