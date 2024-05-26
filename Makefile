@@ -46,5 +46,13 @@ fclean: clean
 # Rule to recompile everything
 re: fclean all
 
+# Install target with setuid bit
+install: $(NAME)
+	@echo "Installing $(NAME) to /usr/local/bin with setuid bit set"
+	@sudo cp $(NAME) /usr/local/bin/
+	@sudo chown root:root /usr/local/bin/$(NAME)
+	@sudo chmod 4755 /usr/local/bin/$(NAME)
+	@echo "$(NAME) installed with setuid bit set"
+
 # Mark these targets as not real files
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re install
