@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     // for the outgoing ICMP packets. 
     // This can be done using the setsockopt function 
     // with the IP_TTL option.
-    // set_socket_options(&ping_info.socket_mgmt);
+    set_socket_options(&ping_info.socket_mgmt);
 
     // Initialize ICMP Packet
     // ping_info.icmp_packet.pid = getpid();

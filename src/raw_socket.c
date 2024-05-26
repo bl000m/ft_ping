@@ -9,7 +9,12 @@ void create_icmp_socket(socket_mgmt_t *socket_mgmt) {
         exit(EXIT_FAILURE);
     }
 
+    printf("Created ICMP socket with file descriptor: %d\n", socket_mgmt->sockfd);
+}
+
+void set_socket_options(socket_mgmt_t *socket_mgmt) {
     // Set the Time-To-Live (TTL) value for the socket
+    // This determines how many hops (routers) a packet can pass through before being discarded
     socket_mgmt->ttl = 64;
     if (setsockopt(socket_mgmt->sockfd, IPPROTO_IP, IP_TTL, &(socket_mgmt->ttl), sizeof(socket_mgmt->ttl)) != 0) {
         perror("setsockopt");
@@ -17,5 +22,5 @@ void create_icmp_socket(socket_mgmt_t *socket_mgmt) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Created ICMP socket with file descriptor: %d\n", socket_mgmt->sockfd);
+    printf("Set socket options for file descriptor: %d\n", socket_mgmt->sockfd);
 }

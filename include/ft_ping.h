@@ -7,9 +7,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h> // INET_ADDSTRLEN in resolve hostname
-#include <netinet/ip_icmp.h>
+#include <netinet/ip_icmp.h> // icmp struct
 #include <netdb.h> //addrinfo struct + getaddrinfo
-#include <unistd.h>
+#include <unistd.h> // for getpid()
 #include <signal.h>
 #include <errno.h>
 #include <sys/time.h>
@@ -18,6 +18,7 @@
 
 #define PACKET_SIZE 64
 #define IP_HEADER_SIZE 20
+#define PAYLOAD_SIZE 56 
 
 // Define color escape sequences
 #define COLOR_GREEN "\033[0;32m"
@@ -42,12 +43,13 @@ typedef struct {
     int ttl;
 } socket_mgmt_t;
 
-// ICMP Packet Handling: Variables for packet construction, sequence numbers, and IDs
+
 typedef struct {
-    struct icmp icmp_pkt;
-    int seq_num;
-    pid_t pid;
-    unsigned short checksum;
+    struct icmphdr header; // ICMP header
+    char payload[PAYLOAD_SIZE]; // ICMP payload
+    int seq_num; // Sequence number
+    pid_t pid; // Process ID
+    unsigned short checksum; // Checksum
 } icmp_packet_t;
 
 typedef struct {
