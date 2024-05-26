@@ -10,7 +10,7 @@
 #include <netinet/ip_icmp.h> // icmp struct
 #include <netdb.h> //addrinfo struct + getaddrinfo
 #include <unistd.h> // for getpid()
-#include <signal.h>
+#include <signal.h>// to handle SIGINT signal (Ctrl+C)
 #include <errno.h>
 #include <sys/time.h>
 #include <getopt.h>
@@ -51,6 +51,8 @@ typedef struct {
     int seq_num; // Sequence number
     pid_t pid; // Process ID
     unsigned short checksum; // Checksum
+    struct timeval send_time;
+    struct timeval received_time;
 } icmp_packet_t;
 
 typedef struct {
@@ -68,10 +70,10 @@ typedef struct {
     socket_mgmt_t socket_mgmt;
     icmp_packet_t icmp_packet;
     stats_t stats;
-    struct timeval start_time;
 } ft_ping_t;
 
-// extern struct info g_info;
+// Declare the global variable
+extern ft_ping_t ping_info;
 
 void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args);
 void print_unrecognized_option(const char *option);
@@ -89,6 +91,10 @@ void cleanup_resources(socket_mgmt_t *socket_mgmt);
 void initialize_icmp_packet(icmp_packet_t *icmp_packet);
 void finalize_icmp_packet(icmp_packet_t *icmp_packet);
 unsigned short calculate_checksum(void *buf, int len);
+void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
+void handling_sig(int sig);
+void set_socket_timeout(socket_mgmt_t *socket_mgmt, int seconds, int microseconds);
+
 
 
 #endif

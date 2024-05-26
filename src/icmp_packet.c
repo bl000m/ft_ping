@@ -35,6 +35,88 @@ void finalize_icmp_packet(icmp_packet_t *icmp_packet) {
 
 }
 
+void send_icmp_request(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, dns_resolution_t *dns_resolution) {
+    // Calculate the checksum before sending the ICMP packet
+    icmp_packet->header.checksum = 0; // Ensure checksum is 0 before calculation
+    printf("Calculating checksum...\n");
+    icmp_packet->header.checksum = calculate_checksum(icmp_packet, sizeof(struct icmphdr) + PAYLOAD_SIZE);
+    printf("Checksum calculated: %x\n", icmp_packet->header.checksum);
+
+    // Set the send time before sending the ICMP packet
+    gettimeofday(&(icmp_packet->send_time), NULL);
+
+    // Send the ICMP packet
+    if (sendto(socket_mgmt->sockfd, icmp_packet, sizeof(icmp_packet_t), 0, 
+               (struct sockaddr *)&(dns_resolution->dest_addr), sizeof(struct sockaddr_in)) <= 0) {
+        perror("sendto");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+void receive_icmp_reply(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, stats_t *stats) {
+    struct sockaddr_in sender_addr;
+    socklen_t sender_addr_len = sizeof(sender_addr);
+    char recv_buffer[PACKET_SIZE + IP_HEADER_SIZE]; // Ensure buffer is large enough to include IP header
+    struct timeval recv_time;
+
+    // Receive the ICMP reply packet
+    int bytes_received = recvfrom(socket_mgmt->sockfd, recv_buffer, sizeof(recv_buffer), 0,
+                                  (struct sockaddr *)&sender_addr, &sender_addr_len);
+    if (bytes_received < 0) {
+        perror("recvfrom");
+        exit(EXIT_FAILURE);
+    }
+
+    // Get current time for calculating RTT
+    gettimeofday(&recv_time, NULL);
+    
+    // Calculate RTT and update statistics
+    calculate_rtt(&(icmp_packet->send_time), &recv_time, stats);
+
+    // Process the received packet
+    struct ip *ip_header = (struct ip *)recv_buffer;
+    struct icmp *icmp_reply = (struct icmp *)(recv_buffer + (ip_header->ip_hl << 2));
+
+    if (icmp_reply->icmp_type == ICMP_ECHOREPLY && icmp_reply->icmp_id == icmp_packet->header.un.echo.id) {
+        stats->packets_received++;
+        printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.2f ms\n",
+               bytes_received - (ip_header->ip_hl << 2),
+               inet_ntoa(sender_addr.sin_addr),
+               ntohs(icmp_reply->icmp_seq),
+               ip_header->ip_ttl,
+               stats->total_rtt);
+    }
+}
+
+
+
+void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats) {
+    double rtt; // Round-trip time
+
+    // Calculate RTT in milliseconds
+    rtt = (recv_time->tv_sec - send_time->tv_sec) * 1000.0; // Seconds to milliseconds
+    rtt += (recv_time->tv_usec - send_time->tv_usec) / 1000.0; // Microseconds to milliseconds
+
+    // Update statistics
+    if (stats->packets_received == 1) {
+        // First received packet, initialize min and max RTT
+        stats->min_rtt = rtt;
+        stats->max_rtt = rtt;
+    } else {
+        // Update min and max RTT if necessary
+        if (rtt < stats->min_rtt) {
+            stats->min_rtt = rtt;
+        }
+        if (rtt > stats->max_rtt) {
+            stats->max_rtt = rtt;
+        }
+    }
+
+    // Update total RTT
+    stats->total_rtt += rtt;
+}
+
 unsigned short calculate_checksum(void *buf, int len) {
     unsigned short *buffer = buf;
     unsigned long sum = 0;

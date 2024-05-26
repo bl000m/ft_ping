@@ -22,3 +22,17 @@ void print_help() {
     // printf("-V, --version              print program version\n\n");
     printf("Report bugs to <bug-mpagani@gnu.org>.");
 }
+
+void print_statistics(stats_t *stats, int packets_sent) {
+    double avg_rtt;
+
+    // Calculate average RTT
+    avg_rtt = stats->total_rtt / stats->packets_received;
+
+    // Print statistics
+    printf("Packets sent: %d\n", packets_sent);
+    printf("Packets received: %d\n", stats->packets_received);
+    printf("Minimum RTT: %.2f ms\n", stats->min_rtt);
+    printf("Maximum RTT: %.2f ms\n", stats->max_rtt);
+    printf("Average RTT: %.2f ms\n", avg_rtt);
+}

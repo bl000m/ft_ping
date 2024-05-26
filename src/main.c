@@ -1,8 +1,13 @@
 #include "ft_ping.h"
 
+ft_ping_t ping_info = {0}; // Initialize the context structure
+
 int main(int argc, char *argv[]) {
+
+    // Set up signal handler for Ctrl+C (SIGINT)
+    signal(SIGINT, handling_sig);
+
     // Initialize Variables
-    ft_ping_t ping_info = {0}; // Initialize the context structure
     parsing_arguments(argc, argv, &ping_info.cmd_args);
 
     // Perform DNS Resolution (Optional): 
@@ -22,21 +27,20 @@ int main(int argc, char *argv[]) {
     initialize_icmp_packet(&ping_info.icmp_packet);
     finalize_icmp_packet(&ping_info.icmp_packet);
 
-    // ping_info.icmp_packet.pid = getpid();
-    // ping_info.icmp_packet.seq_num = 0;
-
     // Main loop to send and receive ICMP packets
-    // while (true) {
-    //     send_icmp_request(&ping_info.socket_mgmt, &ping_info.icmp_packet, &ping_info.dns_resolution);
-    //     receive_icmp_reply(&ping_info.socket_mgmt, &ping_info.icmp_packet, &ping_info.stats);
+    while (true) {
+        // Send ICMP request
+        send_icmp_request(&(ping_info.socket_mgmt), &(ping_info.icmp_packet), &(ping_info.dns_resolution));
         
-    //     // Add a sleep to manage the interval between sends
-    //     sleep(1);
-    // }
+        // Receive ICMP reply
+        receive_icmp_reply(&(ping_info.socket_mgmt), &(ping_info.icmp_packet), &(ping_info.stats));
+        
+        // Add a sleep to manage the interval between sends
+        sleep(1);
+    }
 
     // Display Results: Format and display the results, including the number of packets transmitted, received, lost, and any relevant 
     // statistics such as minimum, maximum, and average RTT.
-    // print_statistics(&ping_info.stats, ping_info.stats.packets_sent);
 
     // Handle Errors: Handle any errors that occur during the execution of the program, such as network errors, socket errors, or invalid command-line arguments.
     // handle_errors();

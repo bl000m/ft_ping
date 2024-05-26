@@ -22,5 +22,20 @@ void set_socket_options(socket_mgmt_t *socket_mgmt) {
         exit(EXIT_FAILURE);
     }
 
+    set_socket_timeout(&ping_info.socket_mgmt, 1, 0); // Set timeout to 1 second
+
     printf("Set socket options for file descriptor: %d\n", socket_mgmt->sockfd);
+}
+
+void set_socket_timeout(socket_mgmt_t *socket_mgmt, int seconds, int microseconds) {
+    struct timeval timeout;
+    timeout.tv_sec = seconds;
+    timeout.tv_usec = microseconds;
+
+    if (setsockopt(socket_mgmt->sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) != 0) {
+        perror("setsockopt for timeout");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Set receive timeout for file descriptor %d\n", socket_mgmt->sockfd);
 }
