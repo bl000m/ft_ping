@@ -1,31 +1,27 @@
 #include "ft_ping.h"
 
 void send_receive_icmp_packets() {
-    fd_set read_fds;
-    int max_fd = ping_info.sockfd + 1;
-
     while (1) {
-        FD_ZERO(&read_fds);
-        FD_SET(ping_info.sockfd, &read_fds);
-
-        // Set timeout for select (1 second) => the same amount of time of socket timeout in RCVTIMEO
-        struct timeval timeout;
-        timeout.tv_sec = 1;
-        timeout.tv_usec = 0;
-
-        int ready = select(max_fd, &read_fds, NULL, NULL, &timeout);
-        if (ready == -1) {
-            if (errno != EINTR) {
-                handling_error("select");
-            }
-        } else if (ready > 0) {
-            // Data available to read from the socket
-            if (FD_ISSET(ping_info.sockfd, &read_fds)) {
-                receive_icmp_reply();
-            }
-        }
+        struct timeval loop_start, loop_end;
+        gettimeofday(&loop_start, NULL);
 
         send_icmp_request();
+        receive_icmp_reply();
+
+        gettimeofday(&loop_end, NULL);
+        long elapsed_time_us = calculate_elapsed_time(loop_start, loop_end);
+        sleep_for_remaining_time(elapsed_time_us);
+    }
+}
+
+long calculate_elapsed_time(struct timeval start, struct timeval end) {
+    return (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+}
+
+void sleep_for_remaining_time(long elapsed_time_us) {
+    long remaining_time_us = 1000000 - elapsed_time_us;
+    if (remaining_time_us > 0) {
+        usleep(remaining_time_us);
     }
 }
 

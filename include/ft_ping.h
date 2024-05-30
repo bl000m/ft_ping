@@ -99,5 +99,11 @@ void handling_gai_error(const char *msg, int error_code);
 void handling_error(const char *msg);
 void handling_sig(int sig);
 
+// utils
+long calculate_elapsed_time(struct timeval start, struct timeval end);
+void sleep_for_remaining_time(long elapsed_time_us);
+
+
+
 
 #endif
