@@ -27,8 +27,13 @@ void print_help() {
 void	print_statistics(void) {
     printf("\n--- %s statistics ---\n", ping_info.cmd_args.hostname);
     float ratio = (ping_info.stats.packets_sent - ping_info.stats.packets_received) / ping_info.stats.packets_sent;
-    printf("%u packets transmitted, %u packets received, %.1f%% packet loss\n",
-           ping_info.stats.packets_sent, ping_info.stats.packets_received, 100.0 * ratio);
+    printf("%u packets transmitted, %u packets received, ", ping_info.stats.packets_sent, ping_info.stats.packets_received);
+    
+    if (ratio == 0) {
+        printf("0%% packet loss\n");
+    } else {
+        printf("%.1f%% packet loss\n", 100.0 * ratio);
+    }
     if (ping_info.stats.packets_received > 0) {
         double avg_time = ping_info.stats.total_rtt / ping_info.stats.packets_received;
         double stddev = sqrt((ping_info.stats.total_rtt_squared / ping_info.stats.packets_received) - (avg_time * avg_time));
@@ -39,10 +44,11 @@ void	print_statistics(void) {
 }
 
 void print_start_message() {
+    int pid = getpid();
     if (ping_info.cmd_args.verbose) {
-        printf("PING %s (%s): %d data bytes, id 0x%x = %d\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr), PAYLOAD_SIZE, ping_info.icmp_packet.pid, ping_info.icmp_packet.pid);
+        printf("FT_PING %s (%s): %d data bytes, id 0x%x = %d\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr), PAYLOAD_SIZE, pid, pid);
     }
     else {
-        printf("PING %s (%s): %d data bytes\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr), PAYLOAD_SIZE);
+        printf("FT_PING %s (%s): %d data bytes\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr), PAYLOAD_SIZE);
     }
 }

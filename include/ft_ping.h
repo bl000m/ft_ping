@@ -23,7 +23,7 @@
 #include <netinet/ip.h>
 
 #define PACKET_SIZE 64
-#define IP_HEADER_SIZE 8
+#define IP_HEADER_SIZE 20
 #define PAYLOAD_SIZE 56 
 
 // Define color escape sequences
@@ -43,26 +43,10 @@ typedef struct {
     struct in_addr resolved_ip;
 } dns_resolution_t;
 
-// typedef struct {
-//     struct sockaddr_in dest_addr;
-//     char resolved_ip_str[INET_ADDRSTRLEN]; // for debugging or logging
-// } dns_resolution_t;
-
-// Socket Management: Variables for socket descriptors and related settings
-typedef struct {
-    int sockfd;
-    int ttl;
-} socket_mgmt_t;
-
 
 typedef struct {
     struct icmphdr header; // ICMP header
     char payload[PACKET_SIZE - sizeof(struct icmphdr)]; // ICMP payload
-    int seq_num; // Sequence number
-    pid_t pid; // Process ID
-    unsigned short checksum; // Checksum
-    struct timeval send_time;
-    struct timeval received_time;
 } icmp_packet_t;
 
 typedef struct {
@@ -78,9 +62,11 @@ typedef struct {
 typedef struct {
     cmd_args_t cmd_args;
     dns_resolution_t dns_resolution;
-    socket_mgmt_t socket_mgmt;
     icmp_packet_t icmp_packet;
     stats_t stats;
+    int sockfd;
+    struct timeval send_time;
+    struct timeval received_time;
 } ft_ping_t;
 
 // Declare the global variable
@@ -98,7 +84,6 @@ void receive_icmp_reply();
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
 void print_statistics();
 void handle_errors(void);
-void cleanup_resources(socket_mgmt_t *socket_mgmt);
 void initialize_icmp_packet();
 void finalize_icmp_packet();
 unsigned short calculate_checksum(void *buf, int len);

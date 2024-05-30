@@ -15,10 +15,10 @@ int main(int argc, char *argv[]) {
 
     // Initialize ICMP Packet
     initialize_icmp_packet();
-    finalize_icmp_packet();
+    // finalize_icmp_packet();
 
     // Main loop to send and receive ICMP packets
-    while (true) {
+    while (1) {
         struct timeval loop_start, loop_end;
         gettimeofday(&loop_start, NULL);
 
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 
     // Handle Errors: Handle any errors that occur during the execution of the program, such as network errors, socket errors, or invalid command-line arguments.
     // handle_errors();
-    close(ping_info.socket_mgmt.sockfd);
+    close(ping_info.sockfd);
     return 0;
 }
 

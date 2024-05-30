@@ -4,7 +4,7 @@
 void handling_sig(int sig) {
     if (sig == SIGINT){
         print_statistics(&ping_info.stats, ping_info.stats.packets_sent);
-        close(ping_info.socket_mgmt.sockfd);
+        close(ping_info.sockfd);
         exit(0);
 	}
 	// if (sig == SIGALRM)
