@@ -1,0 +1,5 @@
+# Ignore obj folder and its contents
+obj/
+
+# Ignore ft_ping executable
+ft_ping
