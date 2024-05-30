@@ -14,11 +14,11 @@ void print_help() {
     printf("Usage: ./ft_ping [OPTION...] HOST ...\n");
     printf("Send ICMP ECHO_REQUEST packets to network hosts.\n\n");
     printf(COLOR_GREEN "Options controlling ICMP request types:\n\n" COLOR_RESET);
-    printf("        ...not at the moment.\n\n");
+    printf("...     not at the moment\n\n");
     printf(COLOR_GREEN"Options valid for all request types:\n\n"COLOR_RESET);
-    printf("-v             verbose output\n\n");
+    printf("-v      verbose output\n\n");
     printf(COLOR_GREEN"Options valid for echo requests:\n\n"COLOR_RESET);
-    printf("-?                 give this help list\n\n");
+    printf("-?      give this help list\n\n");
     // printf("-V, --version              print program version\n\n");
     printf("Report bugs to <bug-mpagani@gnu.org>.");
 }
@@ -43,7 +43,7 @@ void	print_statistics(void) {
     }
 }
 
-void print_start_message() {
+void print_info() {
     int pid = getpid();
     if (ping_info.cmd_args.verbose) {
         printf("FT_PING %s (%s): %d data bytes, id 0x%x = %d\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr), PAYLOAD_SIZE, pid, pid);

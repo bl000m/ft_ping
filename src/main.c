@@ -9,39 +9,60 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, handling_sig);
     parsing_arguments(argc, argv);
     resolve_hostname();
-    print_start_message();
+    print_info();
     create_icmp_socket();
     set_socket_options();
-
-    // Initialize ICMP Packet
     initialize_icmp_packet();
-    // finalize_icmp_packet();
+    fd_set read_fds;
+    int max_fd = ping_info.sockfd + 1;
 
-    // Main loop to send and receive ICMP packets
     while (1) {
-        struct timeval loop_start, loop_end;
-        gettimeofday(&loop_start, NULL);
+        FD_ZERO(&read_fds);
+        FD_SET(ping_info.sockfd, &read_fds);
 
-        // Send ICMP request
-        send_icmp_request();
-        
-        // Receive ICMP reply
-        receive_icmp_reply();
+        // Set timeout for select (1 second)
+        struct timeval timeout;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
 
-        gettimeofday(&loop_end, NULL);
-        long elapsed_time_us = (loop_end.tv_sec - loop_start.tv_sec) * 1000000 + (loop_end.tv_usec - loop_start.tv_usec);
-        long remaining_time_us = 1000000 - elapsed_time_us;
-
-        if (remaining_time_us > 0) {
-            usleep(remaining_time_us);
+        int ready = select(max_fd, &read_fds, NULL, NULL, &timeout);
+        if (ready == -1) {
+            if (errno != EINTR) {
+                perror("select");
+                break; // Exit loop on error (excluding interrupt)
+            }
+        } else if (ready > 0) {
+            // Data available to read from the socket
+            if (FD_ISSET(ping_info.sockfd, &read_fds)) {
+                // Receive ICMP reply
+                receive_icmp_reply();
+            }
         }
+
+        // Send ICMP request regardless of whether there's data to read or not
+        send_icmp_request();
     }
 
-    // Display Results: Format and display the results, including the number of packets transmitted, received, lost, and any relevant 
-    // statistics such as minimum, maximum, and average RTT.
+    // Main loop to send and receive ICMP packets
+    // while (1) {
+        // struct timeval loop_start, loop_end;
+        // gettimeofday(&loop_start, NULL);
 
-    // Handle Errors: Handle any errors that occur during the execution of the program, such as network errors, socket errors, or invalid command-line arguments.
-    // handle_errors();
+        // Send ICMP request
+        // send_icmp_request();
+        
+        // Receive ICMP reply
+        // receive_icmp_reply();
+
+        // gettimeofday(&loop_end, NULL);
+        // long elapsed_time_us = (loop_end.tv_sec - loop_start.tv_sec) * 1000000 + (loop_end.tv_usec - loop_start.tv_usec);
+        // long remaining_time_us = 1000000 - elapsed_time_us;
+
+        // if (remaining_time_us > 0) {
+        //     usleep(remaining_time_us);
+        // }
+    // }
+
     close(ping_info.sockfd);
     return 0;
 }

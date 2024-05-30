@@ -1,19 +1,18 @@
 # Source files
-MY_SOURCES = 	src/main.c \
-				src/parsing.c \
-				src/printing.c \
-				src/raw_socket.c \
-				src/icmp_packet.c \
-				src/signals.c \
-				src/init.c \
-				src/utils.c \
-             # src/ft_utils.c \
-             # src/ft_init.c \
-             
-             # src/ft_print.c
+MY_SOURCES = src/main.c \
+             src/parsing.c \
+             src/printing.c \
+             src/raw_socket.c \
+             src/icmp_packet.c \
+             src/signals.c \
+             src/init.c \
+             src/utils.c
+
+# Object directory
+OBJ_DIR = obj
 
 # Object files
-MY_OBJECTS = $(MY_SOURCES:.c=.o)
+MY_OBJECTS = $(patsubst src/%.c,$(OBJ_DIR)/%.o,$(MY_SOURCES))
 
 # Include directory for header files
 INCLUDES = include/
@@ -22,13 +21,17 @@ INCLUDES = include/
 NAME = ft_ping
 
 # Compilation flags
-FLAGS = -g -Wall -Wextra -Werror -I $(INCLUDES)
+FLAGS = -g -Wall -Wextra -Werror -I$(INCLUDES)
 
 # Default target
 all: $(NAME)
 
+# Rule to create the object directory
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
+
 # Rule to compile .c files to .o files
-.c.o:
+$(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
 	@gcc $(FLAGS) -c $< -o $@
 	@echo "Compiling $(NAME): $@"
 
@@ -39,8 +42,8 @@ $(NAME): $(MY_OBJECTS)
 
 # Rule to clean up object files
 clean:
-	@rm -f $(MY_OBJECTS)
-	@echo ".o files cleaned."
+	@rm -rf $(OBJ_DIR)
+	@echo "Object files cleaned."
 
 # Rule to clean up all generated files
 fclean: clean
@@ -58,5 +61,4 @@ install: $(NAME)
 	@sudo chmod 4755 /usr/local/bin/$(NAME)
 	@echo "$(NAME) installed with setuid bit set"
 
-# Mark these targets as not real files
 .PHONY: all clean fclean re install

@@ -1,6 +1,33 @@
 #include "ft_ping.h"
 
+void send_receive_icmp_packets() {
+    fd_set read_fds;
+    int max_fd = ping_info.sockfd + 1;
 
+    while (1) {
+        FD_ZERO(&read_fds);
+        FD_SET(ping_info.sockfd, &read_fds);
+
+        // Set timeout for select (1 second) => the same amount of time of socket timeout in RCVTIMEO
+        struct timeval timeout;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+
+        int ready = select(max_fd, &read_fds, NULL, NULL, &timeout);
+        if (ready == -1) {
+            if (errno != EINTR) {
+                handling_error("select");
+            }
+        } else if (ready > 0) {
+            // Data available to read from the socket
+            if (FD_ISSET(ping_info.sockfd, &read_fds)) {
+                receive_icmp_reply();
+            }
+        }
+
+        send_icmp_request();
+    }
+}
 
 void send_icmp_request() {
     // Increment sequence number
@@ -52,25 +79,17 @@ void receive_icmp_reply() {
     msg.msg_name = &ping_info.dns_resolution.dest_addr;
     msg.msg_namelen = sender_addr_len;
 
-    // printf("msg.msg_name: %p\n", msg.msg_name); // Print the memory address of msg.msg_name
-    // printf("msg.msg_namelen: %d\n", msg.msg_namelen); // Print msg.msg_namelen
-    // printf("msg.msg_iovlen: %ld\n", msg.msg_iovlen); // Print msg.msg_iovlen
-    // printf("Socket file descriptor: %d\n", ping_info.sockfd);
 
-
-    // Receive the ICMP reply packet
     ssize_t bytes_received = recvmsg(ping_info.sockfd, &msg, 0);
-    // printf("bytes received: %ld\n", bytes_received);
     if (bytes_received < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
 			return;
 		}
 		else {
-			exit_with_error("recvmsg");
+			handling_error("recvmsg");
 		}
     }
 
-    // printf("Received %zd bytes from %s\n", bytes_received, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr));
 
     // Ensure received data is large enough to contain ICMP header
     if (bytes_received < (ssize_t)sizeof(struct icmp)) {
@@ -110,7 +129,6 @@ void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t
     if (rtt > stats->max_rtt) stats->max_rtt = rtt;
     stats->total_rtt_squared += rtt * rtt;
     stats->packets_received++;
-    // printf("RTT: %.2f ms\n", rtt);
 }
 
 

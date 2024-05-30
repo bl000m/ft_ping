@@ -26,11 +26,6 @@ void parsing_arguments(int argc, char *argv[]) {
         print_no_args();
         exit(EXIT_FAILURE);
     }
-
-    if (ping_info.cmd_args.verbose) {
-        printf("Verbose mode enabled\n");
-    }
-
 }
 
 void resolve_hostname() {
@@ -40,7 +35,7 @@ void resolve_hostname() {
 
     int error = getaddrinfo(ping_info.cmd_args.hostname, NULL, &hints, &res);
     if (error != 0) {
-        exit_with_gai_error("getaddrinfo", error);
+        handling_gai_error("getaddrinfo", error);
     }
 
     if (res == NULL) {
@@ -57,45 +52,3 @@ void resolve_hostname() {
     freeaddrinfo(res);
 }
 
-
-
-// void resolve_hostname() {
-//     struct addrinfo hints, *res, *p;
-//     int status;
-
-//     // Prepare the hints structure
-//     memset(&hints, 0, sizeof(hints));
-//     hints.ai_family = AF_INET;  // Set hints.ai_family to AF_INET to indicate IPv4 addresses
-//     hints.ai_socktype = SOCK_RAW;  // We need raw socket
-
-//     // Get address information
-//     if ((status = getaddrinfo(ping_info.cmd_args.hostname, NULL, &hints, &res)) != 0) {
-//         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-//         exit(EXIT_FAILURE);
-//     }
-
-//     // Loop through the results and pick the first one we can use
-//     for (p = res; p != NULL; p = p->ai_next) {
-//         struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
-
-//         // Store the destination address directly
-//         ping_info.dns_resolution.dest_addr = *ipv4;
-
-//         // Optional: Store the resolved IP address as a string for debugging/logging
-//         inet_ntop(p->ai_family, &(ipv4->sin_addr), ping_info.dns_resolution.resolved_ip_str, sizeof(ping_info.dns_resolution.resolved_ip_str));
-
-//         break;  // We only need the first valid result
-//     }
-
-//     // Free the linked list
-//     freeaddrinfo(res);
-
-//     // Check if we failed to resolve the ping_info.cmd_args.hostname
-//     if (ping_info.dns_resolution.dest_addr.sin_addr.s_addr == 0) {
-//         fprintf(stderr, "Failed to resolve ping_info.cmd_args.hostname: %s\n", ping_info.cmd_args.hostname);
-//         exit(EXIT_FAILURE);
-//     }
-
-//     printf("Resolved ping_info.cmd_args.hostname %s to IP address: %s\n",
-//            ping_info.cmd_args.hostname, ping_info.dns_resolution.resolved_ip_str);
-// }

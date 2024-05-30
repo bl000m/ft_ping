@@ -17,8 +17,6 @@
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
-
-
 #include <netinet/in.h>
 #include <netinet/ip.h>
 
@@ -26,18 +24,15 @@
 #define IP_HEADER_SIZE 20
 #define PAYLOAD_SIZE 56 
 
-// Define color escape sequences
 #define COLOR_GREEN "\033[0;32m"
 #define COLOR_RESET "\033[0m"
 
-// Command-line Arguments Parsing: Variables to store options and arguments
 typedef struct {
     bool verbose;
     bool show_help;
     char *hostname;
 } cmd_args_t;
 
-// DNS Resolution: Variables to store target IP address or hostname
 typedef struct {
     struct sockaddr_in dest_addr;
     struct in_addr resolved_ip;
@@ -45,8 +40,8 @@ typedef struct {
 
 
 typedef struct {
-    struct icmphdr header; // ICMP header
-    char payload[PACKET_SIZE - sizeof(struct icmphdr)]; // ICMP payload
+    struct icmphdr header;
+    char payload[PACKET_SIZE - sizeof(struct icmphdr)]; 
 } icmp_packet_t;
 
 typedef struct {
@@ -58,7 +53,6 @@ typedef struct {
     double total_rtt_squared;
 } stats_t;
 
-// Main program context structure to encompass all domains
 typedef struct {
     cmd_args_t cmd_args;
     dns_resolution_t dns_resolution;
@@ -69,30 +63,41 @@ typedef struct {
     struct timeval received_time;
 } ft_ping_t;
 
-// Declare the global variable
 extern ft_ping_t ping_info;
 
+// Initialization Functions
+void init_info(void);
+
+// Argument Parsing Functions
 void parsing_arguments(int argc, char *argv[]);
+void resolve_hostname();
+
+// Printing Functions
 void print_unrecognized_option(const char *option);
 void print_no_args();
 void print_help();
-void resolve_hostname();
+void print_info();
+void print_statistics();
+
+// Socket Management Functions
 void create_icmp_socket();
 void set_socket_options();
+void set_socket_timeout(int seconds, int microseconds);
+
+// ICMP Packet Handling Functions
+void send_receive_icmp_packets();
+void initialize_icmp_packet();
 void send_icmp_request();
 void receive_icmp_reply();
+
+// Round-Trip Time Calculation Functions
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
-void print_statistics();
-void handle_errors(void);
-void initialize_icmp_packet();
-void finalize_icmp_packet();
 unsigned short calculate_checksum(void *buf, int len);
-void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
+
+// Error Handling Functions
+void handling_gai_error(const char *msg, int error_code);
+void handling_error(const char *msg);
 void handling_sig(int sig);
-void set_socket_timeout(int seconds, int microseconds);
-void init_info(void);
-void exit_with_gai_error(const char *msg, int error_code);
-void exit_with_error(const char *msg);
-void print_start_message();
+
 
 #endif

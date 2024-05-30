@@ -7,6 +7,4 @@ void handling_sig(int sig) {
         close(ping_info.sockfd);
         exit(0);
 	}
-	// if (sig == SIGALRM)
-	// 	g_params->signals.send = 1;
 }
