@@ -1,40 +1,40 @@
 #include "ft_ping.h"
 
 
-void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args) {
+void parsing_arguments(int argc, char *argv[]) {
     // Initialize the struct fields
-    cmd_args->verbose = false;
-    cmd_args->show_help = false;
-    cmd_args->hostname = NULL;
+    ping_info.cmd_args.verbose = false;
+    ping_info.cmd_args.show_help = false;
+    ping_info.cmd_args.hostname = NULL;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-v") == 0) {
-            cmd_args->verbose = true;
+            ping_info.cmd_args.verbose = true;
         } else if (strcmp(argv[i], "-?") == 0) {
-            cmd_args->show_help = true;
+            ping_info.cmd_args.show_help = true;
             print_help();
             exit(EXIT_SUCCESS);
         } else if (argv[i][0] == '-') {
             print_unrecognized_option(argv[i]);
             exit(EXIT_FAILURE);
         } else {
-            cmd_args->hostname = argv[i];
+            ping_info.cmd_args.hostname = argv[i];
         }
     }
 
-    if (cmd_args->hostname == NULL) {
+    if (ping_info.cmd_args.hostname == NULL) {
         print_no_args();
         exit(EXIT_FAILURE);
     }
 
-    if (cmd_args->verbose) {
+    if (ping_info.cmd_args.verbose) {
         printf("Verbose mode enabled\n");
     }
 
-    printf("Destination: %s\n", cmd_args->hostname);
+    printf("Destination: %s\n", ping_info.cmd_args.hostname);
 }
 
-void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution) {
+void resolve_hostname() {
     struct addrinfo hints, *res, *p;
     int status;
     char resolved_ip_str[INET_ADDRSTRLEN];
@@ -46,7 +46,7 @@ void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution) {
     hints.ai_socktype = SOCK_RAW;  // We need raw socket
 
     // Get address information
-    if ((status = getaddrinfo(hostname, NULL, &hints, &res)) != 0) {
+    if ((status = getaddrinfo(ping_info.cmd_args.hostname, NULL, &hints, &res)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
         exit(EXIT_FAILURE);
     }
@@ -59,8 +59,8 @@ void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution) {
 
         // Convert the IP address to a string and store it
         inet_ntop(p->ai_family, addr, resolved_ip_str, sizeof(resolved_ip_str));
-        dns_resolution->resolved_ip = strdup(resolved_ip_str);  // Store resolved IP as a string
-        dns_resolution->dest_addr = *ipv4;  // Store destination address
+        ping_info.dns_resolution.resolved_ip = strdup(resolved_ip_str);  // Store resolved IP as a string
+        ping_info.dns_resolution.dest_addr = *ipv4;  // Store destination address
 
         break;  // We only need the first valid result
     }
@@ -68,13 +68,13 @@ void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution) {
     // Free the linked list
     freeaddrinfo(res);
 
-    // Check if we failed to resolve the hostname
-    if (!dns_resolution->resolved_ip) {
-        fprintf(stderr, "Failed to resolve hostname: %s\n", hostname);
+    // Check if we failed to resolve the ping_info.cmd_args.hostname
+    if (!ping_info.dns_resolution.resolved_ip) {
+        fprintf(stderr, "Failed to resolve ping_info.cmd_args.hostname: %s\n", ping_info.cmd_args.hostname);
         exit(EXIT_FAILURE);
     }
 
-    printf("Resolved hostname %s to IP address: %s\n", hostname, dns_resolution->resolved_ip);
+    printf("Resolved ping_info.cmd_args.hostname %s to IP address: %s\n", ping_info.cmd_args.hostname, ping_info.dns_resolution.resolved_ip);
 }
 
 

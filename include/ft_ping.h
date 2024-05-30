@@ -17,6 +17,10 @@
 #include <stdbool.h>
 #include <time.h>
 
+
+#include <netinet/in.h>
+#include <netinet/ip.h>
+
 #define PACKET_SIZE 64
 #define IP_HEADER_SIZE 20
 #define PAYLOAD_SIZE 56 
@@ -47,7 +51,7 @@ typedef struct {
 
 typedef struct {
     struct icmphdr header; // ICMP header
-    char payload[PAYLOAD_SIZE]; // ICMP payload
+    char payload[PACKET_SIZE - sizeof(struct icmphdr)]; // ICMP payload
     int seq_num; // Sequence number
     pid_t pid; // Process ID
     unsigned short checksum; // Checksum
@@ -75,26 +79,26 @@ typedef struct {
 // Declare the global variable
 extern ft_ping_t ping_info;
 
-void parsing_arguments(int argc, char *argv[], cmd_args_t *cmd_args);
+void parsing_arguments(int argc, char *argv[]);
 void print_unrecognized_option(const char *option);
 void print_no_args();
 void print_help();
-void resolve_hostname(const char *hostname, dns_resolution_t *dns_resolution);
-void create_icmp_socket(socket_mgmt_t *socket_mgmt);
-void set_socket_options(socket_mgmt_t *socket_mgmt);
-void send_icmp_request(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, dns_resolution_t *dns_resolution);
-void receive_icmp_reply(socket_mgmt_t *socket_mgmt, icmp_packet_t *icmp_packet, stats_t *stats);
+void resolve_hostname();
+void create_icmp_socket();
+void set_socket_options();
+void send_icmp_request();
+void receive_icmp_reply();
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
 void print_statistics(stats_t *stats, int packets_sent);
 void handle_errors(void);
 void cleanup_resources(socket_mgmt_t *socket_mgmt);
-void initialize_icmp_packet(icmp_packet_t *icmp_packet);
-void finalize_icmp_packet(icmp_packet_t *icmp_packet);
+void initialize_icmp_packet();
+void finalize_icmp_packet();
 unsigned short calculate_checksum(void *buf, int len);
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
 void handling_sig(int sig);
-void set_socket_timeout(socket_mgmt_t *socket_mgmt, int seconds, int microseconds);
-
+void set_socket_timeout(int seconds, int microseconds);
+void init_info(void);
 
 
 #endif

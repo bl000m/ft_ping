@@ -5,6 +5,7 @@ MY_SOURCES = 	src/main.c \
 				src/raw_socket.c \
 				src/icmp_packet.c \
 				src/signals.c \
+				src/init.c \
              # src/ft_utils.c \
              # src/ft_init.c \
              
