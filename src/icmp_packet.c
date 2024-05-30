@@ -1,28 +1,6 @@
 #include "ft_ping.h"
 
-void initialize_icmp_packet() {
-    printf("Initializing ICMP packet...\n");
 
-    // Clear the packet
-    memset(&ping_info.icmp_packet, 0, sizeof(icmp_packet_t));
-
-    // Initialize the ICMP header
-    ping_info.icmp_packet.header.type = ICMP_ECHO; // Echo request
-    ping_info.icmp_packet.header.code = 0; // Must be 0 for Echo request
-    ping_info.icmp_packet.header.un.echo.id = htons(ping_info.icmp_packet.pid);
-    ping_info.icmp_packet.header.un.echo.sequence = htons(ping_info.icmp_packet.seq_num);
-    ping_info.icmp_packet.header.checksum = 0; // Checksum initially set to 0
-
-
-}
-
-
-void finalize_icmp_packet() {
-    ping_info.icmp_packet.header.checksum = 0; // Ensure checksum is 0 before calculation
-    ping_info.icmp_packet.header.checksum = calculate_checksum(&(ping_info.icmp_packet), sizeof(icmp_packet_t));
-    printf("Checksum calculated: %x\n", ping_info.icmp_packet.header.checksum);
-
-}
 
 void send_icmp_request() {
     printf("Sending ICMP request...\n");
@@ -79,6 +57,12 @@ void receive_icmp_reply() {
 
     printf("Received %zd bytes from %s\n", bytes_received, inet_ntoa(sender_addr.sin_addr));
 
+    // Ensure received data is large enough to contain ICMP header
+    if (bytes_received < (ssize_t)sizeof(struct icmp)) {
+        printf("Received packet is too small\n");
+        return;
+    }
+
     // Get current time for calculating RTT
     struct timeval received_time;
     gettimeofday(&received_time, NULL);
@@ -106,12 +90,14 @@ void receive_icmp_reply() {
 
 
 
+
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats) {
     double rtt = ((recv_time->tv_sec - send_time->tv_sec) * 1000.0) +
                  ((recv_time->tv_usec - send_time->tv_usec) / 1000.0);
     stats->total_rtt += rtt;
     if (rtt < stats->min_rtt) stats->min_rtt = rtt;
     if (rtt > stats->max_rtt) stats->max_rtt = rtt;
+    stats->total_rtt_squared += rtt * rtt;
     stats->packets_received++;
     printf("RTT: %.2f ms\n", rtt);
 }

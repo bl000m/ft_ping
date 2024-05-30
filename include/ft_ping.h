@@ -16,13 +16,14 @@
 #include <getopt.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 
 
 #include <netinet/in.h>
 #include <netinet/ip.h>
 
 #define PACKET_SIZE 64
-#define IP_HEADER_SIZE 20
+#define IP_HEADER_SIZE 8
 #define PAYLOAD_SIZE 56 
 
 // Define color escape sequences
@@ -39,8 +40,13 @@ typedef struct {
 // DNS Resolution: Variables to store target IP address or hostname
 typedef struct {
     struct sockaddr_in dest_addr;
-    char *resolved_ip;
+    struct in_addr resolved_ip;
 } dns_resolution_t;
+
+// typedef struct {
+//     struct sockaddr_in dest_addr;
+//     char resolved_ip_str[INET_ADDRSTRLEN]; // for debugging or logging
+// } dns_resolution_t;
 
 // Socket Management: Variables for socket descriptors and related settings
 typedef struct {
@@ -65,6 +71,7 @@ typedef struct {
     double min_rtt;
     double max_rtt;
     double total_rtt;
+    double total_rtt_squared;
 } stats_t;
 
 // Main program context structure to encompass all domains
@@ -89,7 +96,7 @@ void set_socket_options();
 void send_icmp_request();
 void receive_icmp_reply();
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);
-void print_statistics(stats_t *stats, int packets_sent);
+void print_statistics();
 void handle_errors(void);
 void cleanup_resources(socket_mgmt_t *socket_mgmt);
 void initialize_icmp_packet();
@@ -99,6 +106,8 @@ void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t
 void handling_sig(int sig);
 void set_socket_timeout(int seconds, int microseconds);
 void init_info(void);
-
+void exit_with_gai_error(const char *msg, int error_code);
+void exit_with_error(const char *msg);
+void print_start_message();
 
 #endif

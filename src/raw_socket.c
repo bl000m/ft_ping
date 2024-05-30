@@ -22,7 +22,7 @@ void set_socket_options() {
         exit(EXIT_FAILURE);
     }
 
-    // set_socket_timeout(&ping_info.socket_mgmt, 1, 0); // Set timeout to 1 second
+    set_socket_timeout(1, 0); // Set timeout to 1 second
 
     printf("Set socket options for file descriptor: %d\n", ping_info.socket_mgmt.sockfd);
 }

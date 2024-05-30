@@ -8,7 +8,6 @@ int main(int argc, char *argv[]) {
     init_info();
     signal(SIGINT, handling_sig);
     parsing_arguments(argc, argv);
-
     resolve_hostname();
     create_icmp_socket();
     set_socket_options();
@@ -42,9 +41,6 @@ int main(int argc, char *argv[]) {
 
     // Handle Errors: Handle any errors that occur during the execution of the program, such as network errors, socket errors, or invalid command-line arguments.
     // handle_errors();
-
-    // Cleanup Resources: Close the ICMP socket and perform any necessary cleanup before exiting the program.
-    // cleanup_resources(&ping_info.socket_mgmt);
     close(ping_info.socket_mgmt.sockfd);
     return 0;
 }

@@ -6,6 +6,7 @@ MY_SOURCES = 	src/main.c \
 				src/icmp_packet.c \
 				src/signals.c \
 				src/init.c \
+				src/utils.c \
              # src/ft_utils.c \
              # src/ft_init.c \
              
@@ -33,7 +34,7 @@ all: $(NAME)
 
 # Rule to link object files into the final executable
 $(NAME): $(MY_OBJECTS)
-	@gcc $(FLAGS) $(MY_OBJECTS) -o $(NAME)
+	@gcc $(FLAGS) $(MY_OBJECTS) -o $(NAME) -lm
 	@echo "$(NAME) compiled"
 
 # Rule to clean up object files

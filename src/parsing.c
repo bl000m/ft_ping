@@ -35,47 +35,69 @@ void parsing_arguments(int argc, char *argv[]) {
 }
 
 void resolve_hostname() {
-    struct addrinfo hints, *res, *p;
-    int status;
-    char resolved_ip_str[INET_ADDRSTRLEN];
-    // The INET_ADDRSTRLEN macro is defined in <arpa/inet.h>. It specifies the length of the string buffer needed to hold the IPv4 address in string form, including the terminating null byte. Specifically, INET_ADDRSTRLEN is defined as 16, which is enough to hold the longest possible IPv4 address in dotted-decimal format (e.g., "255.255.255.255") plus the null terminator.
-
-    // Prepare the hints structure
+    struct addrinfo hints, *res;
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;  // Set hints.ai_family to AF_INET to indicate IPv4 addresses
-    hints.ai_socktype = SOCK_RAW;  // We need raw socket
+    hints.ai_family = AF_INET;
 
-    // Get address information
-    if ((status = getaddrinfo(ping_info.cmd_args.hostname, NULL, &hints, &res)) != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-        exit(EXIT_FAILURE);
+    int error = getaddrinfo(ping_info.cmd_args.hostname, NULL, &hints, &res);
+    if (error != 0) {
+        exit_with_gai_error("getaddrinfo", error);
     }
 
-    // Loop through the results and pick the first one we can use
-    for (p = res; p != NULL; p = p->ai_next) {
-        void *addr;
-        struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
-        addr = &(ipv4->sin_addr);
-
-        // Convert the IP address to a string and store it
-        inet_ntop(p->ai_family, addr, resolved_ip_str, sizeof(resolved_ip_str));
-        ping_info.dns_resolution.resolved_ip = strdup(resolved_ip_str);  // Store resolved IP as a string
-        ping_info.dns_resolution.dest_addr = *ipv4;  // Store destination address
-
-        break;  // We only need the first valid result
+    if (res == NULL) {
+        printf("Host not found.\n");
+        exit(1);
     }
 
-    // Free the linked list
+    ping_info.dns_resolution.dest_addr.sin_family = AF_INET;
+    ping_info.dns_resolution.dest_addr.sin_port = 0;
+    ping_info.dns_resolution.dest_addr.sin_addr = ((struct sockaddr_in*)res->ai_addr)->sin_addr;
+
+	ping_info.dns_resolution.resolved_ip = ping_info.dns_resolution.dest_addr.sin_addr;
+
     freeaddrinfo(res);
-
-    // Check if we failed to resolve the ping_info.cmd_args.hostname
-    if (!ping_info.dns_resolution.resolved_ip) {
-        fprintf(stderr, "Failed to resolve ping_info.cmd_args.hostname: %s\n", ping_info.cmd_args.hostname);
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Resolved ping_info.cmd_args.hostname %s to IP address: %s\n", ping_info.cmd_args.hostname, ping_info.dns_resolution.resolved_ip);
+    printf("Resolved %s to IP address: %s\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.resolved_ip));
 }
 
 
 
+// void resolve_hostname() {
+//     struct addrinfo hints, *res, *p;
+//     int status;
+
+//     // Prepare the hints structure
+//     memset(&hints, 0, sizeof(hints));
+//     hints.ai_family = AF_INET;  // Set hints.ai_family to AF_INET to indicate IPv4 addresses
+//     hints.ai_socktype = SOCK_RAW;  // We need raw socket
+
+//     // Get address information
+//     if ((status = getaddrinfo(ping_info.cmd_args.hostname, NULL, &hints, &res)) != 0) {
+//         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+//         exit(EXIT_FAILURE);
+//     }
+
+//     // Loop through the results and pick the first one we can use
+//     for (p = res; p != NULL; p = p->ai_next) {
+//         struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+
+//         // Store the destination address directly
+//         ping_info.dns_resolution.dest_addr = *ipv4;
+
+//         // Optional: Store the resolved IP address as a string for debugging/logging
+//         inet_ntop(p->ai_family, &(ipv4->sin_addr), ping_info.dns_resolution.resolved_ip_str, sizeof(ping_info.dns_resolution.resolved_ip_str));
+
+//         break;  // We only need the first valid result
+//     }
+
+//     // Free the linked list
+//     freeaddrinfo(res);
+
+//     // Check if we failed to resolve the ping_info.cmd_args.hostname
+//     if (ping_info.dns_resolution.dest_addr.sin_addr.s_addr == 0) {
+//         fprintf(stderr, "Failed to resolve ping_info.cmd_args.hostname: %s\n", ping_info.cmd_args.hostname);
+//         exit(EXIT_FAILURE);
+//     }
+
+//     printf("Resolved ping_info.cmd_args.hostname %s to IP address: %s\n",
+//            ping_info.cmd_args.hostname, ping_info.dns_resolution.resolved_ip_str);
+// }

@@ -23,16 +23,26 @@ void print_help() {
     printf("Report bugs to <bug-mpagani@gnu.org>.");
 }
 
-void print_statistics(stats_t *stats, int packets_sent) {
-    double avg_rtt;
 
-    // Calculate average RTT
-    avg_rtt = stats->total_rtt / stats->packets_received;
+void	print_statistics(void) {
+    printf("\n--- %s statistics ---\n", ping_info.cmd_args.hostname);
+    float ratio = (ping_info.stats.packets_sent - ping_info.stats.packets_received) / ping_info.stats.packets_sent;
+    printf("%u packets transmitted, %u packets received, %.1f%% packet loss\n",
+           ping_info.stats.packets_sent, ping_info.stats.packets_received, 100.0 * ratio);
+    if (ping_info.stats.packets_received > 0) {
+        double avg_time = ping_info.stats.total_rtt / ping_info.stats.packets_received;
+        double stddev = sqrt((ping_info.stats.total_rtt_squared / ping_info.stats.packets_received) - (avg_time * avg_time));
 
-    // Print statistics
-    printf("Packets sent: %d\n", packets_sent);
-    printf("Packets received: %d\n", stats->packets_received);
-    printf("Minimum RTT: %.2f ms\n", stats->min_rtt);
-    printf("Maximum RTT: %.2f ms\n", stats->max_rtt);
-    printf("Average RTT: %.2f ms\n", avg_rtt);
+        printf("round-trip min/avg/max/stddev = %.3f/%.3f/%.3f/%.3f ms\n",
+               ping_info.stats.min_rtt, avg_time, ping_info.stats.max_rtt, stddev);
+    }
+}
+
+void print_start_message() {
+    if (ping_info.cmd_args.verbose) {
+        printf("PING %s (%s): %d data bytes, id 0x%x = %d\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr), PAYLOAD_SIZE, ping_info.icmp_packet.pid, ping_info.icmp_packet.pid);
+    }
+    else {
+        printf("PING %s (%s): %d data bytes\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr), PAYLOAD_SIZE);
+    }
 }
