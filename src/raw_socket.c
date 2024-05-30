@@ -9,7 +9,7 @@ void create_icmp_socket() {
         exit(EXIT_FAILURE);
     }
 
-    printf("Created ICMP socket with file descriptor: %d\n", ping_info.socket_mgmt.sockfd);
+    // printf("Created ICMP socket with file descriptor: %d\n", ping_info.socket_mgmt.sockfd);
 }
 
 void set_socket_options() {
@@ -24,7 +24,6 @@ void set_socket_options() {
 
     set_socket_timeout(1, 0); // Set timeout to 1 second
 
-    printf("Set socket options for file descriptor: %d\n", ping_info.socket_mgmt.sockfd);
 }
 
 void set_socket_timeout(int seconds, int microseconds) {
@@ -37,5 +36,4 @@ void set_socket_timeout(int seconds, int microseconds) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Set receive timeout for file descriptor %d\n", ping_info.socket_mgmt.sockfd);
 }

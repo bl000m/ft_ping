@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, handling_sig);
     parsing_arguments(argc, argv);
     resolve_hostname();
+    print_start_message();
     create_icmp_socket();
     set_socket_options();
 

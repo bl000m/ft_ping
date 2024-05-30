@@ -31,7 +31,6 @@ void parsing_arguments(int argc, char *argv[]) {
         printf("Verbose mode enabled\n");
     }
 
-    printf("Destination: %s\n", ping_info.cmd_args.hostname);
 }
 
 void resolve_hostname() {
@@ -56,7 +55,6 @@ void resolve_hostname() {
 	ping_info.dns_resolution.resolved_ip = ping_info.dns_resolution.dest_addr.sin_addr;
 
     freeaddrinfo(res);
-    printf("Resolved %s to IP address: %s\n", ping_info.cmd_args.hostname, inet_ntoa(ping_info.dns_resolution.resolved_ip));
 }
 
 

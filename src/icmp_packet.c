@@ -9,17 +9,15 @@ void send_icmp_request() {
     ping_info.icmp_packet.header.un.echo.sequence++;
 
     // Calculate checksum before sending
-    printf("Calculating checksum before sending...\n");
     ping_info.icmp_packet.header.checksum = 0;
-    ping_info.icmp_packet.header.checksum = calculate_checksum(&(ping_info.icmp_packet), sizeof(icmp_packet_t));
-    printf("Checksum calculated before sending: %x\n", ping_info.icmp_packet.header.checksum);
+    ping_info.icmp_packet.header.checksum = calculate_checksum(ping_info.icmp_packet.payload, PAYLOAD_SIZE);
 
     // Set send time
     gettimeofday(&(ping_info.icmp_packet.send_time), NULL);
     printf("Send time: %ld seconds, %ld microseconds\n", ping_info.icmp_packet.send_time.tv_sec, ping_info.icmp_packet.send_time.tv_usec);
 
     // Send ICMP packet
-    int sent_bytes = sendto(ping_info.socket_mgmt.sockfd, &ping_info.icmp_packet, sizeof(icmp_packet_t), 0, 
+    int sent_bytes = sendto(ping_info.socket_mgmt.sockfd, &ping_info.icmp_packet, PAYLOAD_SIZE, 0, 
                             (struct sockaddr *)&(ping_info.dns_resolution.dest_addr), sizeof(struct sockaddr_in));
     if (sent_bytes <= 0) {
         perror("sendto");
@@ -29,6 +27,7 @@ void send_icmp_request() {
 
     ping_info.stats.packets_sent++;
 }
+
 
 void receive_icmp_reply() {
     struct sockaddr_in sender_addr;
