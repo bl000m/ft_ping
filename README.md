@@ -1,5 +1,8 @@
 # ft_ping
 
+## ICMP protocol
+- [ICMP protocol specification](https://datatracker.ietf.org/doc/html/rfc792)
+
 ## setup
 ### Reference: inetutils 2.0 / ping
 - `wget http://ftp.gnu.org/gnu/inetutils/inetutils-2.0.tar.gz` => here the [details](https://ftp.gnu.org/gnu/inetutils/)
