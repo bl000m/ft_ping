@@ -19,3 +19,4 @@
 - [raw socket](Doc/socket.md)
 - [icmp packet](Doc/icmp_packet.md)
 - [resolve dnns](Doc/resolve_dns.md)
+- [statistics](Doc/statistics.md)

@@ -15,22 +15,7 @@ void send_receive_icmp_packets() {
 }
 
 
-long calculate_elapsed_time(struct timeval start, struct timeval end) {
-    return (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
-}
-
-
-void sleep_for_remaining_time(long elapsed_time_us) {
-    long remaining_time_us = 1000000 - elapsed_time_us;
-    if (remaining_time_us > 0) {
-        usleep(remaining_time_us);
-    }
-}
-
-
 void send_icmp_request() {
-
-
     if (ping_info.stats.packets_sent != 0) {
         ping_info.icmp_packet.header.un.echo.sequence++;
     }
@@ -123,7 +108,6 @@ void process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeva
 
         double rtt = ((receive_time->tv_sec - ping_info.send_time.tv_sec) * 1000.0) +
                      ((receive_time->tv_usec - ping_info.send_time.tv_usec) / 1000.0);
-
 
         payload_bytes_received = bytes_received - (ip_header->ip_hl << 2);
         dest_addr_str = inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr);

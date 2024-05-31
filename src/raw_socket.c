@@ -5,7 +5,6 @@ void create_icmp_socket() {
     if (ping_info.sockfd < 0) {
         handling_error("socket");
     }
-
 }
 
 
@@ -14,7 +13,6 @@ void set_socket_options() {
     if (setsockopt(ping_info.sockfd, IPPROTO_IP, IP_TTL, &ttl_val, sizeof(ttl_val)) != 0) {        
         handling_error("setsockopt for TTL");
     }
-    
     set_socket_timeout(1, 0); 
 }
 
