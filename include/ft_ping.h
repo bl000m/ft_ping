@@ -78,6 +78,8 @@ void print_no_args();
 void print_help();
 void print_info();
 void print_statistics();
+void print_icmp_packet_info(ssize_t bytes_received, char *dest_addr, uint16_t sequence, uint8_t ttl, double rtt);
+
 
 // Socket Management Functions
 void create_icmp_socket();
@@ -89,6 +91,10 @@ void send_receive_icmp_packets();
 void initialize_icmp_packet();
 void send_icmp_request();
 void receive_icmp_reply();
+ssize_t receive_icmp_packet(struct msghdr *message);
+int validate_received_packet(ssize_t bytes_received);
+void process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeval *receive_time);
+void initialize_message_buffers(char *recv_buffer, struct msghdr *message, struct iovec *io_vector);
 
 // Round-Trip Time Calculation Functions
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats);

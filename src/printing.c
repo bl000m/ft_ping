@@ -24,6 +24,16 @@ void print_help() {
 }
 
 
+void print_icmp_packet_info(ssize_t bytes_received, char *dest_addr, uint16_t sequence, uint8_t ttl, double rtt) {
+    printf("%zd bytes from %s: icmp_seq=%d ttl=%d time=%.3f ms\n",
+           bytes_received,
+           dest_addr,
+           sequence,
+           ttl,
+           round(rtt * 1000) / 1000); 
+}
+
+
 void	print_statistics(void) {
     printf("\n--- %s statistics ---\n", ping_info.cmd_args.hostname);
     float ratio = (ping_info.stats.packets_sent - ping_info.stats.packets_received) / ping_info.stats.packets_sent;

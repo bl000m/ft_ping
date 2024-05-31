@@ -34,14 +34,12 @@ void initialize_icmp_packet() {
 
     // Clear the packet
     memset(&ping_info.icmp_packet, 0, sizeof(icmp_packet_t));
-
     // Initialize the ICMP header
     ping_info.icmp_packet.header.type = ICMP_ECHO; // Echo request
     ping_info.icmp_packet.header.code = 0; // Must be 0 for Echo request
     ping_info.icmp_packet.header.un.echo.id = getpid() & 0xFFFF;
     ping_info.icmp_packet.header.checksum = 0; // Checksum initially set to 0
-
-
+    ping_info.icmp_packet.header.un.echo.sequence = 0; // Initialize sequence number to 0
 }
 
 
