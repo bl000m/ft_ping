@@ -1,24 +1,24 @@
 #ifndef FT_PING_H
 #define FT_PING_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <stdio.h> // printf
+#include <stdlib.h> // exit
+#include <string.h> // memset strcmp
+// #include <sys/types.h>
+// #include <sys/socket.h>
 #include <arpa/inet.h> // INET_ADDSTRLEN in resolve hostname
 #include <netinet/ip_icmp.h> // icmp struct
 #include <netdb.h> //addrinfo struct + getaddrinfo
 #include <unistd.h> // for getpid()
-#include <signal.h>// to handle SIGINT signal (Ctrl+C)
+#include <signal.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <getopt.h>
+// #include <getopt.h>
 #include <stdbool.h>
-#include <time.h>
+// #include <time.h>
 #include <math.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
+// #include <netinet/in.h>
+// #include <netinet/ip.h>
 
 #define PACKET_SIZE 64
 #define IP_HEADER_SIZE 20

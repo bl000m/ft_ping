@@ -2,7 +2,6 @@
 
 
 void parsing_arguments(int argc, char *argv[]) {
-    // Initialize the struct fields
     ping_info.cmd_args.verbose = false;
     ping_info.cmd_args.show_help = false;
     ping_info.cmd_args.hostname = NULL;

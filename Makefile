@@ -1,4 +1,3 @@
-# Source files
 MY_SOURCES = src/main.c \
              src/parsing.c \
              src/printing.c \
@@ -8,49 +7,38 @@ MY_SOURCES = src/main.c \
              src/init.c \
              src/utils.c
 
-# Object directory
 OBJ_DIR = obj
 
-# Object files
 MY_OBJECTS = $(patsubst src/%.c,$(OBJ_DIR)/%.o,$(MY_SOURCES))
 
-# Include directory for header files
 INCLUDES = include/
 
-# Output executable name
 NAME = ft_ping
 
-# Compilation flags
 FLAGS = -g -Wall -Wextra -Werror -I$(INCLUDES)
 
-# Default target
 all: $(NAME)
 
-# Rule to create the object directory
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
-# Rule to compile .c files to .o files
 $(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
+	@echo "Compiling $(NAME): $@" > $(OBJ_DIR)/compile.log
 	@gcc $(FLAGS) -c $< -o $@
-	@echo "Compiling $(NAME): $@"
+	@rm -f $(OBJ_DIR)/compile.log
 
-# Rule to link object files into the final executable
 $(NAME): $(MY_OBJECTS)
 	@gcc $(FLAGS) $(MY_OBJECTS) -o $(NAME) -lm
 	@echo "$(NAME) compiled"
 
-# Rule to clean up object files
 clean:
 	@rm -rf $(OBJ_DIR)
 	@echo "Object files cleaned."
 
-# Rule to clean up all generated files
 fclean: clean
 	@rm -f $(NAME)
 	@echo "$(NAME) cleaned."
 
-# Rule to recompile everything
 re: fclean all
 
 # Install target with setuid bit
