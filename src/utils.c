@@ -12,6 +12,7 @@ void handling_gai_error(const char *msg, int error_code) {
     exit(1);
 }
 
+
 void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t *stats) {
     double rtt = ((recv_time->tv_sec - send_time->tv_sec) * 1000.0) +
                  ((recv_time->tv_usec - send_time->tv_usec) / 1000.0);
@@ -21,7 +22,6 @@ void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t
     stats->total_rtt_squared += rtt * rtt;
     stats->packets_received++;
 }
-
 
 unsigned short calculate_checksum(void *buf, int len) {
     unsigned short *buffer = buf;
@@ -35,4 +35,16 @@ unsigned short calculate_checksum(void *buf, int len) {
     sum = (sum >> 16) + (sum & 0xFFFF);
     sum += (sum >> 16);
     return ~sum;
+}
+
+long calculate_elapsed_time(struct timeval start, struct timeval end) {
+    return (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+}
+
+
+void sleep_for_remaining_time(long elapsed_time_us) {
+    long remaining_time_us = 1000000 - elapsed_time_us;
+    if (remaining_time_us > 0) {
+        usleep(remaining_time_us);
+    }
 }

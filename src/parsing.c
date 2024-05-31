@@ -1,6 +1,5 @@
 #include "ft_ping.h"
 
-
 void parsing_arguments(int argc, char *argv[]) {
     ping_info.cmd_args.verbose = false;
     ping_info.cmd_args.show_help = false;
@@ -27,6 +26,7 @@ void parsing_arguments(int argc, char *argv[]) {
     }
 }
 
+
 void resolve_hostname(char *argv[]) {
     struct addrinfo hints, *res;
     memset(&hints, 0, sizeof(hints));
@@ -38,11 +38,9 @@ void resolve_hostname(char *argv[]) {
         exit(1);
     }
 
-
     ping_info.dns_resolution.dest_addr.sin_family = AF_INET;
     ping_info.dns_resolution.dest_addr.sin_port = 0;
     ping_info.dns_resolution.dest_addr.sin_addr = ((struct sockaddr_in*)res->ai_addr)->sin_addr;
-
 	ping_info.dns_resolution.resolved_ip = ping_info.dns_resolution.dest_addr.sin_addr;
 
     freeaddrinfo(res);

@@ -1,24 +1,18 @@
 #ifndef FT_PING_H
 #define FT_PING_H
 
-#include <stdio.h> // printf
-#include <stdlib.h> // exit
-#include <string.h> // memset strcmp
-// #include <sys/types.h>
-// #include <sys/socket.h>
-#include <arpa/inet.h> // INET_ADDSTRLEN in resolve hostname
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <arpa/inet.h> // INET_ADDSTRLEN
 #include <netinet/ip_icmp.h> // icmp struct
 #include <netdb.h> //addrinfo struct + getaddrinfo
 #include <unistd.h> // for getpid()
 #include <signal.h>
 #include <errno.h>
 #include <sys/time.h>
-// #include <getopt.h>
 #include <stdbool.h>
-// #include <time.h>
 #include <math.h>
-// #include <netinet/in.h>
-// #include <netinet/ip.h>
 
 #define PACKET_SIZE 64
 #define IP_HEADER_SIZE 20
@@ -26,6 +20,8 @@
 
 #define COLOR_GREEN "\033[0;32m"
 #define COLOR_RESET "\033[0m"
+
+
 
 typedef struct {
     bool verbose;
@@ -65,6 +61,9 @@ typedef struct {
 
 extern ft_ping_t ping_info;
 
+
+
+
 // Initialization Functions
 void init_info(void);
 
@@ -79,7 +78,6 @@ void print_help();
 void print_info();
 void print_statistics();
 void print_icmp_packet_info(ssize_t bytes_received, char *dest_addr, uint16_t sequence, uint8_t ttl, double rtt);
-
 
 // Socket Management Functions
 void create_icmp_socket();
@@ -108,8 +106,6 @@ void handling_sig(int sig);
 // utils
 long calculate_elapsed_time(struct timeval start, struct timeval end);
 void sleep_for_remaining_time(long elapsed_time_us);
-
-
 
 
 #endif

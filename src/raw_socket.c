@@ -8,6 +8,7 @@ void create_icmp_socket() {
 
 }
 
+
 void set_socket_options() {
     int ttl_val = 64;
     if (setsockopt(ping_info.sockfd, IPPROTO_IP, IP_TTL, &ttl_val, sizeof(ttl_val)) != 0) {        
@@ -16,6 +17,7 @@ void set_socket_options() {
     
     set_socket_timeout(1, 0); 
 }
+
 
 void set_socket_timeout(int seconds, int microseconds) {
     struct timeval timeout;
