@@ -28,20 +28,17 @@ void parsing_arguments(int argc, char *argv[]) {
     }
 }
 
-void resolve_hostname() {
+void resolve_hostname(char *argv[]) {
     struct addrinfo hints, *res;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
 
     int error = getaddrinfo(ping_info.cmd_args.hostname, NULL, &hints, &res);
     if (error != 0) {
-        handling_gai_error("getaddrinfo", error);
-    }
-
-    if (res == NULL) {
-        printf("Host not found.\n");
+        printf("%s: unknown host\n", argv[0]);
         exit(1);
     }
+
 
     ping_info.dns_resolution.dest_addr.sin_family = AF_INET;
     ping_info.dns_resolution.dest_addr.sin_port = 0;

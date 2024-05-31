@@ -70,7 +70,7 @@ void init_info(void);
 
 // Argument Parsing Functions
 void parsing_arguments(int argc, char *argv[]);
-void resolve_hostname();
+void resolve_hostname(char *argv[]);
 
 // Printing Functions
 void print_unrecognized_option(const char *option);
