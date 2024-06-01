@@ -88,7 +88,7 @@ void set_socket_timeout(int seconds, int microseconds);
 void send_receive_icmp_packets();
 void initialize_icmp_packet();
 void send_icmp_request();
-void receive_icmp_reply();
+bool receive_icmp_reply();
 ssize_t receive_icmp_packet(struct msghdr *message);
 int validate_received_packet(ssize_t bytes_received);
 bool process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeval *receive_time);

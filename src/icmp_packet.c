@@ -1,12 +1,15 @@
 #include "ft_ping.h"
 
 void send_receive_icmp_packets() {
-    while (1) {
+    // todo
+    bool continue_ping = true;
+    while (continue_ping) {
         struct timeval loop_start, loop_end;
         gettimeofday(&loop_start, NULL);
 
         send_icmp_request();
-        receive_icmp_reply();
+        // todo
+        continue_ping = receive_icmp_reply();
 
         gettimeofday(&loop_end, NULL);
         long elapsed_time_us = calculate_elapsed_time(loop_start, loop_end);
@@ -35,20 +38,21 @@ void send_icmp_request() {
 }
 
 
-void receive_icmp_reply() {
+bool receive_icmp_reply() {
     char recv_buffer[PACKET_SIZE + IP_HEADER_SIZE];
     struct msghdr message;
     struct iovec io_vector[1];
+    bool is_valid_packet;
 
     initialize_message_buffers(recv_buffer, &message, io_vector);
 
     ssize_t bytes_received = receive_icmp_packet(&message);
     if (bytes_received <= 0) {
-        return;
+        return true;
     }
 
     if (validate_received_packet(bytes_received) < 0) {
-        return;
+        return true;
     }
 
     struct timeval receive_time;
@@ -56,13 +60,16 @@ void receive_icmp_reply() {
 
     calculate_rtt(&ping_info.send_time, &receive_time, &ping_info.stats);
 
-    // process_icmp_reply(recv_buffer, bytes_received, &receive_time);
     // todo
-    if (process_icmp_reply(recv_buffer, bytes_received, &receive_time)) {
+    is_valid_packet = process_icmp_reply(recv_buffer, bytes_received, &receive_time);
+
+    if (is_valid_packet) {
         ping_info.stats.packets_received++;
     }
 
+    return is_valid_packet;
 }
+
 
 
 void initialize_message_buffers(char *recv_buffer, struct msghdr *message, struct iovec *io_vector) {
@@ -111,8 +118,7 @@ bool process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeva
     // todo
     if (icmp_reply->type == ICMP_TIME_EXCEEDED) {
         printf("TTL expired\n");
-        close(ping_info.sockfd);
-        exit(1);
+        return false;
     }
 
     // Check if the received packet is an ICMP echo reply and matches the expected sequence ID
