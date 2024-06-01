@@ -20,7 +20,8 @@ void calculate_rtt(struct timeval *send_time, struct timeval *recv_time, stats_t
     if (rtt < stats->min_rtt) stats->min_rtt = rtt;
     if (rtt > stats->max_rtt) stats->max_rtt = rtt;
     stats->total_rtt_squared += rtt * rtt;
-    stats->packets_received++;
+    // todo
+    // stats->packets_received++;
 }
 
 unsigned short calculate_checksum(void *buf, int len) {

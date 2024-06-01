@@ -56,7 +56,12 @@ void receive_icmp_reply() {
 
     calculate_rtt(&ping_info.send_time, &receive_time, &ping_info.stats);
 
-    process_icmp_reply(recv_buffer, bytes_received, &receive_time);
+    // process_icmp_reply(recv_buffer, bytes_received, &receive_time);
+    // todo
+    if (process_icmp_reply(recv_buffer, bytes_received, &receive_time)) {
+        ping_info.stats.packets_received++;
+    }
+
 }
 
 
@@ -94,7 +99,7 @@ int validate_received_packet(ssize_t bytes_received) {
 }
 
 
-void process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeval *receive_time) {
+bool process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeval *receive_time) {
     // Extracting IP header and ICMP header from recv_buffer
     struct ip *ip_header = (struct ip *)recv_buffer;
     struct icmphdr *icmp_reply = (struct icmphdr *)(recv_buffer + (ip_header->ip_hl << 2));
@@ -102,6 +107,13 @@ void process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeva
     ssize_t payload_bytes_received;
     char *dest_addr_str;
     uint16_t sequence_num;
+
+    // todo
+    if (icmp_reply->type == ICMP_TIME_EXCEEDED) {
+        printf("TTL expired\n");
+        close(ping_info.sockfd);
+        exit(1);
+    }
 
     // Check if the received packet is an ICMP echo reply and matches the expected sequence ID
     if (icmp_reply->type == ICMP_ECHOREPLY && icmp_reply->un.echo.id == ping_info.icmp_packet.header.un.echo.id) {
@@ -113,9 +125,11 @@ void process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeva
         dest_addr_str = inet_ntoa(ping_info.dns_resolution.dest_addr.sin_addr);
         sequence_num = icmp_reply->un.echo.sequence;
         print_icmp_packet_info(payload_bytes_received, dest_addr_str, sequence_num, ip_header->ip_ttl, rtt);
+        return true;
     } else {
         printf("Received ICMP packet of type %d\n", icmp_reply->type);
     }
+    return false;
 }
 
 

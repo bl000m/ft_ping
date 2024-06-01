@@ -91,7 +91,7 @@ void send_icmp_request();
 void receive_icmp_reply();
 ssize_t receive_icmp_packet(struct msghdr *message);
 int validate_received_packet(ssize_t bytes_received);
-void process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeval *receive_time);
+bool process_icmp_reply(char *recv_buffer, ssize_t bytes_received, struct timeval *receive_time);
 void initialize_message_buffers(char *recv_buffer, struct msghdr *message, struct iovec *io_vector);
 
 // Round-Trip Time Calculation Functions
