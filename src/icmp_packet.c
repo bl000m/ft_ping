@@ -10,6 +10,10 @@ void send_receive_icmp_packets() {
         send_icmp_request();
         // todo
         continue_ping = receive_icmp_reply();
+        // todo
+        if (!continue_ping) {
+            print_statistics();
+        }
 
         gettimeofday(&loop_end, NULL);
         long elapsed_time_us = calculate_elapsed_time(loop_start, loop_end);
@@ -65,8 +69,7 @@ bool receive_icmp_reply() {
 
     if (is_valid_packet) {
         ping_info.stats.packets_received++;
-    }
-
+    } 
     return is_valid_packet;
 }
 

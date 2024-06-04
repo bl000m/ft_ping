@@ -9,7 +9,7 @@ void create_icmp_socket() {
 
 
 void set_socket_options() {
-    int ttl_val = 64;
+    int ttl_val = 2;
     if (setsockopt(ping_info.sockfd, IPPROTO_IP, IP_TTL, &ttl_val, sizeof(ttl_val)) != 0) {        
         handling_error("setsockopt for TTL");
     }
