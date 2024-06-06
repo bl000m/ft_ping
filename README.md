@@ -1,5 +1,5 @@
 # ft_ping
-
+[chart](https://whimsical.com/42-projects-7EKQioumBVzf7smU9P6ARA)
 ## ICMP protocol
 - [ICMP protocol specification](https://datatracker.ietf.org/doc/html/rfc792)
 
